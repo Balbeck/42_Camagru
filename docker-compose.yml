@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Backend PHP avec Nginx et PHP-FPM
+  backend:
+    build: ./backend
+    container_name: Back
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=camagru_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+    networks:
+      - camagru-network
+    depends_on:
+      - postgres
+      - mailhog
+
+  # Serveur Nginx pour le backend
+  nginx:
+    image: nginx:latest
+    container_name: Nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - camagru-network
+
+  # Frontend React
+  frontend:
+    image: node:16
+    container_name: Front
+    working_dir: /usr/src/app
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "3000:3000"
+    command: "npm start"
+    networks:
+      - camagru-network
+    depends_on:
+      - backend
+
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:13
+    container_name: Postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root_password
+      POSTGRES_DB: camagru_db
+    ports:
+      - "5432:5432"
+    networks:
+      - camagru-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service de mails MailHog pour tester l'envoi d'e-mails
+  mailhog:
+    image: mailhog/mailhog
+    container_name: Mailhog
+    ports:
+      - "8025:8025"  # Interface web de MailHog
+      - "1025:1025"  # SMTP pour l'envoi d'e-mails
+    networks:
+      - camagru-network
+
+networks:
+  camagru-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
