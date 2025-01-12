@@ -29,3 +29,14 @@ npx create-react-app .
 npm install ajv@latest ajv-keywords@latest
 
 --> npm start  :)
+
+
+## Backend
+
+### PHP-FPM (PHP-FastCGI Process Manager) -> docs
+https://itnext.io/how-to-serve-your-backends-with-nginx-a-comprehensive-guide-c8a74955c6ed
+
+### Nginx / PHP docker -> docs
+https://marc.it/dockerize-application-with-nginx-and-php8/
+
+
