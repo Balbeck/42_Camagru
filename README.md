@@ -4,6 +4,9 @@ a simple:
 ' docker compose up --build '
 
 ## Frontend 
+### To Run
+npm i <br>
+npm start
 
 ### install
 Télécharger et installer nvm :
